@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set in environment variables' });
+    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set' });
   }
 
   const { contentBlock, prompt } = req.body;
@@ -21,25 +21,14 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        messages: [
-          {
-            role: 'user',
-            content: [contentBlock, { type: 'text', text: prompt }],
-          },
-        ],
+        messages: [{ role: 'user', content: [contentBlock, { type: 'text', text: prompt }] }],
       }),
     });
-
-    if (!response.ok) {
-      const err = await response.text();
-      return res.status(response.status).json({ error: err });
-    }
 
     const data = await response.json();
     const raw = data.content.map(i => i.text || '').join('');
     const clean = raw.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-    return res.status(200).json(parsed);
+    return res.status(200).json(JSON.parse(clean));
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
