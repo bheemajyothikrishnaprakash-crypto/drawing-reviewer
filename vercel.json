@@ -2,7 +2,16 @@
   "version": 2,
   "functions": {
     "api/review.js": {
-      "maxDuration": 60
+      "maxDuration": 30,
+      "memory": 1024
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
 }
